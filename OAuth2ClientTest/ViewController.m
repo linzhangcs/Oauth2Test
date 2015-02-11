@@ -122,7 +122,37 @@ static NSString * const KIDOAuth2success = @"Success";
     [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [urlRequest setHTTPBody:bodyData];
     
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    
+    [[session dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+       
+        NSLog(@"request: %@", urlRequest);
+        
+        if (response) {
+            
+            NSError *error;
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+            NSLog(@"data: %@", info);
+            
+        }
+        
+        if (error) {
+            
+            NSLog(@"ERROR: %@", error.localizedDescription);
+            
+        }
+        
+    }]resume];
+    
+    NSLog(@"After request");
+    
+    
+    
+    /*
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:nil completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        
+        NSLog(@"request: %@", urlRequest);
         if(response){
             NSError *error;
             //NSDictionary *channels
@@ -134,6 +164,9 @@ static NSString * const KIDOAuth2success = @"Success";
         }
         NSLog(@"completion block");
     }];
+    */
+    
+    
     NSLog(@"After request");
 
 }
