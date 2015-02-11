@@ -103,22 +103,38 @@ static NSString * const KIDOAuth2success = @"Success";
 -(void)requestOAuth2ProtectedDetails{
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
     NSArray *accounts = [store accountsWithAccountType:KIDOAuth2AccountType];
-    //https://www.googleapis.com/youtube/v3/subscriptions
-
-    //performMethod:@"GET" onResource:[NSURL URLWithString:@"https://www.googleapis.com/youtube/v3/subscriptions/?part=snippet&mine=true"]
     
-    [NXOAuth2Request performMethod:@"GET" onResource:[NSURL URLWithString:@"https://www.googleapis.com/youtube/v3/subscriptions/?part=snippet&mine=true"] usingParameters: nil withAccount: accounts[0] sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
-        //progress
-    }responseHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
-        if(responseData){
+    //performMethod:@"GET" onResource:[NSURL URLWithString:@"https://www.googleapis.com/youtube/v3/subscriptions/?part=snippet&mine=true"]
+    //performMethod:@"GET" onResource:[NSURL URLWithString:@"https://www.googleapis.com/youtube/v3/subscriptions/?part=snippet&mine=true"
+    //https://github.com/nxtbgthng/OAuth2Client/issues/88
+    
+
+    //\"snippet\":{\"resourceId\":{\"channelId\":\"UCqnbDFdCpuN8CMEg0VuEBqA\"
+    NSData * KIDOAuth2RequestBody = [@"{\"snippet\":{\"resourceId\":{\"kind\":\"youtube#subscription\", \"channelId\":\"UCqnbDFdCpuN8CMEg0VuEBqA\"}}}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:KIDOAuth2RequestBody options:0 error:nil];
+    NSData *bodyData = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
+
+    NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:@"https://www.googleapis.com/youtube/v3/subscriptions/?part=snippet"] method:@"POST" parameters:nil];
+    request.account = accounts[0];
+    
+    NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPBody:bodyData];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:nil completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if(response){
             NSError *error;
             //NSDictionary *channels
-            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-            NSLog(@"Subscription info: %@", info);
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+            NSLog(@"data: %@", info);
         }
-        if(error){
-            NSLog(@"ERROR: %@", error.localizedDescription);
+        if(connectionError){
+            NSLog(@"ERROR: %@", connectionError.localizedDescription);
         }
+        NSLog(@"completion block");
     }];
+    NSLog(@"After request");
+
 }
 @end
