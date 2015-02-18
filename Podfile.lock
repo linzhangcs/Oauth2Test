@@ -1,10 +1,13 @@
 PODS:
+  - mailcore2-ios (0.5.0)
   - NXOAuth2Client (1.2.8)
 
 DEPENDENCIES:
+  - mailcore2-ios
   - NXOAuth2Client (~> 1.2.8)
 
 SPEC CHECKSUMS:
+  mailcore2-ios: 87e8128b6f12026688c965d5632f4c864ce99e70
   NXOAuth2Client: fa81be68c9ce628202028ae037c9c92cfbb37865
 
 COCOAPODS: 0.36.0.beta.2

@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "NXOAuth2.h"
+#import "MailClient.h"
 
 @interface ViewController ()
 
@@ -110,7 +111,15 @@ static NSString * const KIDOAuth2success = @"Success";
     
 
     //\"snippet\":{\"resourceId\":{\"channelId\":\"UCqnbDFdCpuN8CMEg0VuEBqA\"
+    
+    
+    
+    
     NSData * KIDOAuth2RequestBody = [@"{\"snippet\":{\"resourceId\":{\"kind\":\"youtube#subscription\", \"channelId\":\"UCqnbDFdCpuN8CMEg0VuEBqA\"}}}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    // using Jeremy's channel id
+    
+    //NSData *KIDOAuth2RequestBody = [@"{\"snippet\":{\"resourceId\":{\"kind\":\"youtube#subscription\", \"channelId\":\"UCrqpZkeSMTEmL4NQnq0xC3g\"}}}" dataUsingEncoding:NSUTF8StringEncoding];
     
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:KIDOAuth2RequestBody options:0 error:nil];
     NSData *bodyData = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
@@ -135,6 +144,13 @@ static NSString * const KIDOAuth2success = @"Success";
             NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
             NSLog(@"data: %@", info);
             
+            MailClient *mailclient = [[MailClient alloc] init];
+            
+            [mailclient sendSubscriptionNotice];
+            
+           
+            
+            
         }
         
         if (error) {
@@ -146,6 +162,7 @@ static NSString * const KIDOAuth2success = @"Success";
     }]resume];
     
     NSLog(@"After request");
+    
     
     
     
